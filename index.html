@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>PoliGPS</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+        <style>
+body {
+    padding: 0;
+    margin: 0;
+}
+html, body, #map {
+    height: 100%;
+    width: 100vw;
+}
+        </style>
+    </head>
+    <body>
+        <div id="map"></div>
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+
+        <script>
+
+            // NW = 0, 0
+            // SE = 271.8, 279.2
+            // 87:
+            var lon1 = -71.624375;
+            var lat1 = -40.7591;
+            var x1 = 186.7;
+            var y1 = 112;
+            // 220:
+            var lon2 = -71.625772;
+            var lat2 = -40.759892;
+            var x2 = 76.8;
+            var y2 = 194.25;
+            //
+            // x1 = a + b * lon1
+            // x2 = a + b * lon2
+            // x1 + x2 = 2a + b * (lon1+lon2)
+            // x1 - x2 = b * (lon1-lon2)
+            var b = (x1 - x2) / (lon1-lon2);
+            var a = x1 - b * lon1;
+            var w = -a/b;
+            var e = (271.8-a)/b;
+
+            // y1 = a + b * lat1
+            // y2 = a + b * lat2
+            // y1 + y2 = 2a + b * (lat1+lat2)
+            // y1 - y2 = b * (lat1-lat2)
+            b = (y1 - y2) / (lat1-lat2);
+            a = y1 - b * lat1;
+            var n = -a/b;
+            var s = (279.2-a)/b;
+
+            var bounds = L.latLngBounds([[n, w], [s, e]])
+            var layers = [
+                L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 22,
+                    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                }),
+                L.imageOverlay('assets/layer-lotes.png', bounds, {}),
+                L.imageOverlay('assets/layer-altim.png', bounds, {}),
+                L.imageOverlay('assets/layer-catastro.png', bounds, {}),
+            ];
+            var map = L.map('map', {
+                layers: layers,
+            });
+            var layerControl = L.control.layers({}, {
+                "lotes": layers[1],
+                "altimetría": layers[2],
+                "catastro": layers[3],
+            }).addTo(map);
+            map.fitBounds(bounds);
+
+            map.locate({setView: false, maxZoom: 22, watch: true});
+
+            var marker;
+            var circle;
+            function onLocationFound(e) {
+                var radius = e.accuracy;
+
+                if (!marker) {
+                    marker = L.marker(e.latlng).addTo(map);
+                } else {
+                    marker.setLatLng(e.latlng);
+                }
+                if (!circle) {
+                    circle = L.circle(e.latlng, radius).addTo(map);
+                } else {
+                    circle.setLatLng(e.latlng);
+                }
+            }
+            map.on('locationfound', onLocationFound);
+        </script>
+    </body>
+</html>
