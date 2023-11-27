@@ -63,14 +63,18 @@ html, body, #map {
                     maxZoom: 22,
                     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                 }),
-                L.imageOverlay('assets/layer-lotes.png', bounds, {}),
+                L.imageOverlay('assets/layer-lotes-alpha.png', bounds, {}),
                 L.imageOverlay('assets/layer-altim.png', bounds, {}),
                 L.imageOverlay('assets/layer-catastro.png', bounds, {}),
             ];
             var map = L.map('map', {
                 layers: layers,
             });
-            var layerControl = L.control.layers({}, {
+            googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
+                maxZoom: 20,
+                subdomains:['mt0','mt1','mt2','mt3']
+            });
+            var layerControl = L.control.layers({"base": layers[0], satélite: googleSat}, {
                 "lotes": layers[1],
                 "altimetría": layers[2],
                 "catastro": layers[3],
