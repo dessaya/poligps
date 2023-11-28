@@ -89,16 +89,17 @@ html, body, #map {
             var circle;
             function onLocationFound(e) {
                 var radius = Math.min(100, e.accuracy);
-
-                if (!marker) {
-                    marker = L.marker(e.latlng).addTo(map);
-                } else {
-                    marker.setLatLng(e.latlng);
-                }
                 if (!circle) {
                     circle = L.circle(e.latlng, radius).addTo(map);
+                    circle.setStyle({stroke: false});
                 } else {
                     circle.setLatLng(e.latlng);
+                }
+                if (!marker) {
+                    marker = L.circleMarker(e.latlng, {radius: 5, fillOpacity: 1.0}).addTo(map);
+                    marker.setStyle({fillColor: '#0000ff', color: 'white'});
+                } else {
+                    marker.setLatLng(e.latlng);
                 }
             }
             map.on('locationfound', onLocationFound);
