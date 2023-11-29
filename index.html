@@ -60,28 +60,29 @@ html, body, #map {
             var s = (279.2-a)/b;
 
             var bounds = L.latLngBounds([[n, w], [s, e]])
-            var layers = [
-                L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+            var layers = {
+                osm: L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
                     maxZoom: 22,
                     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a>'
                 }),
-                L.imageOverlay('assets/layer-lotes-alpha.png', bounds, {}),
-                L.imageOverlay('assets/layer-altim.png', bounds, {}),
-                L.imageOverlay('assets/layer-catastro.png', bounds, {}),
-            ];
-            var map = L.map('map', {
-                layers: layers,
-            });
-            var layerControl = L.control.layers({
-                "osm": layers[0],
-                satélite: L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
+                satelite: L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
                     maxZoom: 20,
                     subdomains:['mt0','mt1','mt2','mt3']
                 }),
+                lotes: L.imageOverlay('assets/layer-lotes-alpha.png', bounds, {}),
+                altim: L.imageOverlay('assets/layer-altimetria.svg', bounds, {}),
+                catastro: L.imageOverlay('assets/layer-catastro.svg', bounds, {}),
+            };
+            var map = L.map('map', {
+                layers: [layers.osm, layers.lotes],
+            });
+            var layerControl = L.control.layers({
+                osm: layers.osm,
+                satélite: layers.satelite,
             }, {
-                "lotes": layers[1],
-                "altimetría": layers[2],
-                "catastro": layers[3],
+                lotes: layers.lotes,
+                "altimetría": layers.altim,
+                "catastro": layers.catastro,
             }).addTo(map);
             map.fitBounds(bounds);
 
