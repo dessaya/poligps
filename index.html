@@ -87,7 +87,12 @@ html, body, #map {
             circle.setStyle({stroke: false});
             var marker = L.circleMarker(L.latLng(0, 0), {radius: 5, fillOpacity: 1.0}).addTo(map);
             marker.setStyle({fillColor: '#0000ff', color: 'white'});
-            map.locate({setView: false, maxZoom: 22, watch: true}).on('locationfound', function (e) {
+            map.locate({
+                setView: false,
+                watch: true,
+                enableHighAccuracy: true,
+            }).on('locationfound', function (e) {
+                console.log(e.latlng, e.accuracy)
                 circle.setLatLng(e.latlng);
                 circle.setRadius(Math.min(100, e.accuracy));
                 marker.setLatLng(e.latlng);
