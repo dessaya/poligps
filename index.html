@@ -83,26 +83,15 @@ html, body, #map {
             }).addTo(map);
             map.fitBounds(bounds);
 
-            map.locate({setView: false, maxZoom: 22, watch: true});
-
-            var marker;
-            var circle;
-            function onLocationFound(e) {
-                var radius = Math.min(100, e.accuracy);
-                if (!circle) {
-                    circle = L.circle(e.latlng, radius).addTo(map);
-                    circle.setStyle({stroke: false});
-                } else {
-                    circle.setLatLng(e.latlng);
-                }
-                if (!marker) {
-                    marker = L.circleMarker(e.latlng, {radius: 5, fillOpacity: 1.0}).addTo(map);
-                    marker.setStyle({fillColor: '#0000ff', color: 'white'});
-                } else {
-                    marker.setLatLng(e.latlng);
-                }
-            }
-            map.on('locationfound', onLocationFound);
+            var circle = L.circle(L.latLng(0, 0), 0).addTo(map);
+            circle.setStyle({stroke: false});
+            var marker = L.circleMarker(L.latLng(0, 0), {radius: 5, fillOpacity: 1.0}).addTo(map);
+            marker.setStyle({fillColor: '#0000ff', color: 'white'});
+            map.locate({setView: false, maxZoom: 22, watch: true}).on('locationfound', function (e) {
+                circle.setLatLng(e.latlng);
+                circle.setRadius(Math.min(100, e.accuracy));
+                marker.setLatLng(e.latlng);
+            });
         </script>
     </body>
 </html>
